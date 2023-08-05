@@ -1,6 +1,7 @@
 <script setup>
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
+import { debounce } from 'lodash'
 import MovieCard from './components/MovieCard.vue'
 
 const movies = ref([])
@@ -34,6 +35,12 @@ const getMovies = () => {
   }
 }
 
+const onSearchInput = () => {
+  debouncedGetMovies()
+}
+
+const debouncedGetMovies = debounce(getMovies, 300)
+
 onMounted(() => {
   getMovies()
 })
@@ -65,7 +72,7 @@ onMounted(() => {
         </div>
         <input
           v-model="searchQuery"
-          @input="getMovies"
+          @input="onSearchInput"
           type="text"
           id="search"
           name="search"
