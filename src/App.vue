@@ -5,8 +5,10 @@ import MovieCard from './components/MovieCard.vue'
 
 const movies = ref([])
 const searchQuery = ref('')
+const loading = ref(false)
 
 const getMovies = () => {
+  loading.value = true
   if (searchQuery.value === '') {
     axios
       .get(
@@ -15,6 +17,9 @@ const getMovies = () => {
       .then((response) => {
         movies.value = response.data.results
       })
+      .finally(() => {
+        loading.value = false
+      })
   } else {
     axios
       .get(
@@ -22,6 +27,9 @@ const getMovies = () => {
       )
       .then((response) => {
         movies.value = response.data.results
+      })
+      .finally(() => {
+        loading.value = false
       })
   }
 }
@@ -69,12 +77,17 @@ onMounted(() => {
     <div
       class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-10"
     >
-      <MovieCard
-        v-for="movie in movies"
-        :key="movie.id"
-        :movie="movie"
-        class="bg-white shadow-lg rounded-lg overflow-hidden"
-      />
+      <template v-if="loading">
+        <p>Loading...</p>
+      </template>
+      <template v-else>
+        <MovieCard
+          v-for="movie in movies"
+          :key="movie.id"
+          :movie="movie"
+          class="bg-white shadow-lg rounded-lg overflow-hidden"
+        />
+      </template>
     </div>
   </div>
 </template>
