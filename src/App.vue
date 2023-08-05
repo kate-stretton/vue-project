@@ -1,6 +1,8 @@
 <script setup>
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
+import MovieCard from './components/MovieCard.vue'
+
 const allMovies = ref([])
 
 const getMovies = () => {
@@ -20,11 +22,14 @@ onMounted(() => {
 
 <template>
   <div>Movies</div>
-  <div>
-    <ul>
-      <li v-for="movie in allMovies" :key="movie.id">
-        {{ movie.original_title }}
-      </li>
-    </ul>
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+  >
+    <MovieCard
+      v-for="movie in allMovies"
+      :key="movie.id"
+      :movie="movie"
+      class="bg-white shadow-lg rounded-lg overflow-hidden"
+    />
   </div>
 </template>
