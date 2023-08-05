@@ -1,12 +1,14 @@
 <template>
-  <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+  <div
+    class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform transform hover:scale-105 hover:shadow-xl"
+  >
     <img
       :src="'https://image.tmdb.org/t/p/w500/' + movie.poster_path"
       alt="Movie Poster"
       class="w-full h-auto"
     />
     <div class="p-4">
-      <h2 class="text-xl font-semibold">{{ movie.original_title }}</h2>
+      <h3 class="truncate">{{ movie.original_title }}</h3>
       <p class="text-gray-600">{{ formattedDate }}</p>
     </div>
   </div>
