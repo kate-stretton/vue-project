@@ -105,6 +105,9 @@ const getMovies = () => {
       currentPage.value = response.data.page
       totalPages.value = response.data.total_pages
     })
+    .catch((error) => {
+      console.error('API request error:', error)
+    })
     .finally(() => {
       loading.value = false
     })
@@ -114,7 +117,7 @@ const onSearchInput = () => {
   debouncedGetMovies()
 }
 
-const debouncedGetMovies = debounce(getMovies, 300)
+const debouncedGetMovies = debounce(getMovies, 1000)
 
 onMounted(() => {
   getMovies()
