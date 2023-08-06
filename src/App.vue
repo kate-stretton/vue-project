@@ -7,18 +7,32 @@ import MovieCard from './components/MovieCard.vue'
 const movies = ref([])
 const searchQuery = ref('')
 const loading = ref(false)
+const currentPage = ref(1)
+const totalPages = ref(1)
+
+const changePage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
+    getMovies()
+  }
+}
 
 const getMovies = () => {
   loading.value = true
+
+  const pageQuery = `&page=${currentPage.value}`
+
   const apiURL =
     searchQuery.value === ''
-      ? 'https://api.themoviedb.org/3/discover/movie?api_key=136d55d9c6878da748d19b6aa4870c86'
-      : `https://api.themoviedb.org/3/search/movie?api_key=136d55d9c6878da748d19b6aa4870c86&query=${searchQuery.value}`
+      ? `https://api.themoviedb.org/3/discover/movie?api_key=136d55d9c6878da748d19b6aa4870c86${pageQuery}`
+      : `https://api.themoviedb.org/3/search/movie?api_key=136d55d9c6878da748d19b6aa4870c86&query=${searchQuery.value}${pageQuery}`
 
   axios
     .get(apiURL)
     .then((response) => {
       movies.value = response.data.results
+      currentPage.value = response.data.page
+      totalPages.value = response.data.total_pages
     })
     .finally(() => {
       loading.value = false
@@ -37,7 +51,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="m-16">
+  <div class="p-16 bg-yellow-100">
     <h1 class="text-center">Movies</h1>
     <div class="flex justify-center mt-10 mb-10">
       <div class="relative w-full max-w-md">
@@ -71,6 +85,7 @@ onMounted(() => {
         />
       </div>
     </div>
+
     <div
       class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-10"
     >
@@ -85,6 +100,23 @@ onMounted(() => {
           class="bg-white shadow-lg rounded-lg overflow-hidden"
         />
       </template>
+    </div>
+    <div class="flex justify-center mt-10">
+      <button
+        v-if="currentPage > 1"
+        :disabled="currentPage === 1"
+        @click="changePage(currentPage - 1)"
+        class="px-4 py-2 mx-1 bg-blue-900 text-white rounded-md"
+      >
+        Previous
+      </button>
+      <button
+        :disabled="currentPage === totalPages"
+        @click="changePage(currentPage + 1)"
+        class="px-4 py-2 mx-1 bg-blue-900 text-white rounded-md"
+      >
+        Next
+      </button>
     </div>
   </div>
 </template>
