@@ -1,55 +1,3 @@
-<script setup>
-import axios from 'axios'
-import { onMounted, ref } from 'vue'
-import { debounce } from 'lodash'
-import MovieCard from './components/MovieCard.vue'
-
-const movies = ref([])
-const searchQuery = ref('')
-const loading = ref(false)
-const currentPage = ref(1)
-const totalPages = ref(1)
-
-const changePage = (page) => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page
-    getMovies()
-  }
-}
-
-const getMovies = () => {
-  loading.value = true
-
-  const pageQuery = `&page=${currentPage.value}`
-
-  const apiURL =
-    searchQuery.value === ''
-      ? `https://api.themoviedb.org/3/discover/movie?api_key=136d55d9c6878da748d19b6aa4870c86${pageQuery}`
-      : `https://api.themoviedb.org/3/search/movie?api_key=136d55d9c6878da748d19b6aa4870c86&query=${searchQuery.value}${pageQuery}`
-
-  axios
-    .get(apiURL)
-    .then((response) => {
-      movies.value = response.data.results
-      currentPage.value = response.data.page
-      totalPages.value = response.data.total_pages
-    })
-    .finally(() => {
-      loading.value = false
-    })
-}
-
-const onSearchInput = () => {
-  debouncedGetMovies()
-}
-
-const debouncedGetMovies = debounce(getMovies, 300)
-
-onMounted(() => {
-  getMovies()
-})
-</script>
-
 <template>
   <div class="p-16 bg-yellow-100">
     <h1 class="text-center">Movies</h1>
@@ -80,7 +28,7 @@ onMounted(() => {
           type="text"
           id="search"
           name="search"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-700 focus:border-blue-700 block pl-10 p-3 w-full"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-700 focus:border-gray-700 block pl-10 p-3 w-full"
           placeholder="Search by title..."
         />
       </div>
@@ -101,22 +49,74 @@ onMounted(() => {
         />
       </template>
     </div>
-    <div class="flex justify-center mt-10">
+    <div class="flex justify-end mt-10">
       <button
         v-if="currentPage > 1"
         :disabled="currentPage === 1"
         @click="changePage(currentPage - 1)"
-        class="px-4 py-2 mx-1 bg-blue-900 text-white rounded-md"
+        class="px-4 py-2 mx-1 bg-gray-600 text-white rounded-md hover:bg-gray-500"
       >
         Previous
       </button>
       <button
         :disabled="currentPage === totalPages"
         @click="changePage(currentPage + 1)"
-        class="px-4 py-2 mx-1 bg-blue-900 text-white rounded-md"
+        class="px-4 py-2 mx-1 bg-gray-600 text-white rounded-md hover:bg-gray-500"
       >
         Next
       </button>
     </div>
   </div>
 </template>
+
+<script setup>
+import axios from 'axios'
+import { onMounted, ref } from 'vue'
+import { debounce } from 'lodash'
+import MovieCard from './components/MovieCard.vue'
+
+const movies = ref([])
+const searchQuery = ref('')
+const loading = ref(false)
+const currentPage = ref(1)
+const totalPages = ref(1)
+
+const changePage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
+    getMovies()
+  }
+}
+
+const getMovies = () => {
+  loading.value = true
+
+  const pageQuery = `&page=${currentPage.value}`
+
+  const apiURL =
+    searchQuery.value === ''
+      ? `https://api.themoviedb.org/3/movie/popular?api_key=136d55d9c6878da748d19b6aa4870c86${pageQuery}`
+      : `https://api.themoviedb.org/3/search/movie?api_key=136d55d9c6878da748d19b6aa4870c86&query=${searchQuery.value}${pageQuery}`
+
+  axios
+    .get(apiURL)
+    .then((response) => {
+      movies.value = response.data.results
+      currentPage.value = response.data.page
+      totalPages.value = response.data.total_pages
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
+
+const onSearchInput = () => {
+  debouncedGetMovies()
+}
+
+const debouncedGetMovies = debounce(getMovies, 300)
+
+onMounted(() => {
+  getMovies()
+})
+</script>
