@@ -10,29 +10,19 @@ const loading = ref(false)
 
 const getMovies = () => {
   loading.value = true
-  if (searchQuery.value === '') {
-    axios
-      .get(
-        `https://api.themoviedb.org/3/discover/movie?api_key=136d55d9c6878da748d19b6aa4870c86&`
-      )
-      .then((response) => {
-        movies.value = response.data.results
-      })
-      .finally(() => {
-        loading.value = false
-      })
-  } else {
-    axios
-      .get(
-        `https://api.themoviedb.org/3/search/movie?api_key=136d55d9c6878da748d19b6aa4870c86&query=${searchQuery.value}`
-      )
-      .then((response) => {
-        movies.value = response.data.results
-      })
-      .finally(() => {
-        loading.value = false
-      })
-  }
+  const apiURL =
+    searchQuery.value === ''
+      ? 'https://api.themoviedb.org/3/discover/movie?api_key=136d55d9c6878da748d19b6aa4870c86'
+      : `https://api.themoviedb.org/3/search/movie?api_key=136d55d9c6878da748d19b6aa4870c86&query=${searchQuery.value}`
+
+  axios
+    .get(apiURL)
+    .then((response) => {
+      movies.value = response.data.results
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 const onSearchInput = () => {
